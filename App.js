@@ -1,21 +1,37 @@
-import React from 'react';
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Platform } from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Platform, Keyboard, ScrollView } from 'react-native';
 import Task from './components/Task'
 export default function App() {
+  const [task, setTask] = useState()
+  const [tasks, setTasks] = useState([])
+
+  const addTaskHandler = () => {
+    Keyboard.dismiss()
+    setTasks(currentTasks => [...currentTasks, task]) 
+    setTask(null)
+  }
+
+  const removeTaskHandler = (index) => {
+    let updatedTasks = [...tasks]
+    updatedTasks.splice(index, 1)
+    setTasks(updatedTasks)
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
           <Text style={styles.titleSection}>Today's Tasks</Text>
           <View style={styles.items}>
-            <Task text='hello'/>
-            <Task text='world!'/>
+            <ScrollView>
+              {tasks.map((item, index) => <Task text={item} key={index} onDelete={() =>removeTaskHandler(index)} />)}
+            </ScrollView>
           </View>
       </View>
       <KeyboardAvoidingView 
         behavior={Platform.OS == "ios" ? 'padding': 'height'}
         style={styles.writeTaskWrapper}> 
-        <TextInput style={styles.input} placeholder="Add New Task"/>
-        <TouchableOpacity>
+        <TextInput style={styles.input} placeholder="Add New Task" onChangeText={text => setTask(text)} value={task}/>
+        <TouchableOpacity onPress={addTaskHandler}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
@@ -68,10 +84,6 @@ const styles = StyleSheet.create({
     borderRadius: 60,
     borderColor: '#C0C0C0',
     borderWidth: 1,
-    zIndex: 20,
-    shadowColor: 'black',
-    shadowOpacity: 0.7,
-    elevation: 3
   },
   addText: {
     fontSize: 50,
