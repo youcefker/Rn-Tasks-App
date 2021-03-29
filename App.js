@@ -3,10 +3,18 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpaci
 import Task from './components/Task'
 export default function App() {
   const [task, setTask] = useState()
+  const [error, setError] = useState()
   const [tasks, setTasks] = useState([])
 
   const addTaskHandler = () => {
+    if(!task) {
+      setError('your task is empty!')
+      return
+    }
     Keyboard.dismiss()
+    if(error) {
+      setError(null)
+    }
     setTasks(currentTasks => [...currentTasks, task]) 
     setTask(null)
   }
@@ -21,6 +29,11 @@ export default function App() {
     <View style={styles.container}>
       <View style={styles.tasksWrapper}>
           <Text style={styles.titleSection}>Today's Tasks</Text>
+             {error ? 
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>: null
+              }
           <View style={styles.items}>
             <ScrollView>
               {tasks.map((item, index) => <Task text={item} key={index} onDelete={() =>removeTaskHandler(index)} />)}
@@ -88,5 +101,18 @@ const styles = StyleSheet.create({
   addText: {
     fontSize: 50,
     opacity: 0.6
+  },
+  errorContainer: {
+    padding: 5,
+    backgroundColor: 'red',
+    opacity: 0.35,
+    borderColor: '#C0C0C0',
+    borderWidth: 1,
+    borderRadius:5,
+    marginTop: 5,
+  },
+  errorText: {
+    fontWeight: 'bold',
+    alignSelf: 'center'
   }
 });
